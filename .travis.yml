@@ -1,7 +1,34 @@
 language: node_js
 node_js:
-  - 12
-  - 14
-script:
-  - npm run lint
-  - npm run test
+  - 12.16.1
+cache:
+  yarn: true
+  directories:
+    - node_modules
+    - $HOME/.cache/pip
+before_install:
+  - npm config set spin false
+  - export PATH="./bin:$PATH"
+script: npm run check
+services:
+  - docker
+env:
+  global:
+    - secure: I1zXBW3Y2nWqI/N/vWFk3FVKHJp96vmkeTUYYhMIMCTI5cQf/xlGSXZVIS9myiIzoyz4d4Owofe9lKOPzZPBC77NODf8YpGDeEY9idUCDK942Q/soIm5HoJwcz5DtxJ8S4zo9xEFofYZdjIJVdMTCum7Vq/OrbRHC4ydUIDimkdLyavnlbTbBN98ysfoNrEKzloNBWMpaf232101Rinwbl8nxDHXB0KoimzIa/gHyabutzWOZgTOVDnjqRPDrkHyaF9TI/vkIfchRRg77oOYeuIrKk16eC7KaXhaqGg7ciq5M0zDO8Ye3qgV+g2B/ik0iPwPF0zyBKwcylAe0brpe6Shk5ypl/sQjQM48fMLabUxJaTjTlJqMiZ1YFXHKSu1MAYcKpI8/JJyEiXcW1+DLvVtmUNguesovh629APez4om/VSK+PN0o7S4e5DoTjoJOrHVulhB8aU4rm9CpezYXPhAiQw1O8IqpUBxUtPXfbkqtTJI7Et13ZeI/mu+wCtWnhsqKX0wy+9qkqC+4mRQgBSd7Bx9eVpAkRpuIDlWDAXatTSVHaS2YJlbGSSvjaG0uGynMDKWXIlEe6kGI61d8XBaXt+7hLVNpgj47GYqBAXeGetfzyuL3ROgQ6Lf8HdhAyNSFXzE4e70MQAkAYYcTkG72fliiGxdulm2jQygxe0=
+    - secure: C8kRoGUAJ59hi+ou9WCkp6h4PdPSxzyXaQdG1kFwS9q/Yc8sppjLSjrgpocpcAhll6iV92F7SryoJMwit2+25MztK85D0GmzNqK4jz1JtPrO8TACctYoHHcExkXB4/kkdh3uR5owlzHsZ5orji+OF8bgsidYmvP77xwrRvoL3fC2Oi26kS8MC+ahkFZugyHplidzufzRCropa9p2eZsfX3WY6Jzasvur88ntilP4FoVoVzSkmp96QWrKmPLz+4lhBCscWdnBkHk1Mh1RxIeUtHaKBIQc+DYta3lTCZLZ2DdxSheUFuCrGnYyDRmYnl9gI9FhQFHwmbuJ4YwAu8+Ed8LHlrviYSBcoUU/yA+1QgLCmh10ibQ0dYD3qQ6Z2QNSqqexziTfE6I8Ic1qhOTm/aqmAABnt1ukDfjRJ5vN98iWI0XWETVBNZNCoAIzw7ooxUphL5j+bkHbOnZhB5Yy+3IMjjGxhv1EUuGO3qL2SmVxRly+bRrBnBVUxuochZJMcbCLDF42GTwDtaJxnnA4v98j2vbJ+7GWfsVlmNQrkiB3YMN/jo4JVNXJwCTwJtpIpP1MWKNA9jMmcJaWpHKm8fif/hgzmIAx4f4LGrOiItzFSVjHgGN34KXj1gUqiyhvGpRzZLiiyVdZ8EfHU8gZICv8GQJZdQa8RjKfxmxPgLs=
+before_deploy:
+  - bin/travis-before-deploy
+deploy:
+  provider: script
+  script: bin/travis-deploy
+  on:
+    branch: master
+  skip_cleanup: true
+notifications:
+  email: false
+  slack:
+    on_pull_requests: false
+    rooms:
+      secure: MRbYrtDpV6px7Pwc7Bzeg7gPp/C3rj/gYIcM0TgDjtIpZsFckeMIRqKsnUySSpIBC3imfSAWP0bidAenDSEyTSkrVD04ZQgCYFGfy07dH3IsFb05hpQRJBEOtxoDWXeResjsI7vDqac5jsJTqezgng3vJsxeRaiUl4UVTVr+U1r8Qteko8u2VCT4rx4rkrWGJFQnFrlkmux851FEna8MiPwjTjqRv8tcXYPgCQosqOtDpQlHzv/mJKo5ANQpsLHbyJD8mnnOSh0XW/6kocvzdUvzVMiQw8lryBNi1horl0slJAiQ9uHXAnF8iNj8jyL36Y7bWy7NUwp6psyq/QeHAAcgyRpXrPWZg9KM/4ovm/veDQnH+EbiFESCu73eM/hAE5adR898j+r+RAtDhtVul8yDcxM+f6Am86fPRCAwjMc3LInXTFKjjgeyJoJLXR5tgDYKtYOP7H7FnBrmB158gI14LIAWU+bZL/Gb5f2uJShi7X1/8pRDpvc1JgtZM8AH7Eu0pbWHweDiwk0S0QUL1WrJcuF6OZBK5Meib/5JRG0xH9f7zts4DqNFLlB5sQC3MtFutDOjFZvUiblLSvNGx+n5L/5qICahwhNmIMGOnKsRIG+can+rCzldecu7rU8kCt3vohYCXonR6O8lLpEYL65qRZOlGUOQXczky77o53Q=
+    on_success: always
+    on_failure: always
