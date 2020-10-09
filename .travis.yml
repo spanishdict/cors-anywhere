@@ -9,7 +9,6 @@ cache:
 before_install:
   - npm config set spin false
   - export PATH="./bin:$PATH"
-script: npm run check
 services:
   - docker
 env:
