@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install awscli
+pip install --user awscli
+export PATH=$PATH:$HOME/.local/bin
