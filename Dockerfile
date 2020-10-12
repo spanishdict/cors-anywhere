@@ -23,7 +23,7 @@ COPY lib /usr/src/app/lib
 COPY node_modules /usr/src/app/node_modules
 
 # Run the app.
-EXPOSE 3000
+EXPOSE 8080
 COPY bin/docker-cmd.sh /
 RUN chmod +x /docker-cmd.sh
 CMD ["/docker-cmd.sh"]
