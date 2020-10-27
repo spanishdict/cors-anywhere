@@ -1,16 +1,12 @@
 {
-  "name": "cors-anywhere",
-  "version": "0.4.3",
+  "name": "sd-cors-anywhere",
+  "version": "0.4.1",
   "description": "CORS Anywhere is a reverse proxy which adds CORS headers to the proxied request. Request URL is taken from the path",
   "license": "MIT",
   "author": "Rob Wu <rob@robwu.nl>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Rob--W/cors-anywhere.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Rob--W/cors-anywhere/issues/",
-    "email": "rob@robwu.nl"
+    "url": "git+https://github.com/spanishdict/sd-cors-anywhere.git"
   },
   "keywords": [
     "cors",
@@ -29,6 +25,7 @@
   ],
   "dependencies": {
     "http-proxy": "1.11.1",
+    "https-proxy-agent": "5.0.0",
     "proxy-from-env": "0.0.1"
   },
   "devDependencies": {
@@ -42,8 +39,10 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha ./test/test*.js --reporter spec",
-    "test-coverage": "istanbul cover ./node_modules/.bin/_mocha -- test/test.js test/test-ratelimit.js --reporter spec"
+    "test": "NODE_ENV=test mocha ./test/test*.js --reporter spec",
+    "test-coverage": "istanbul cover ./node_modules/.bin/_mocha -- test/test.js test/test-ratelimit.js --reporter spec",
+    "start": "node server.js",
+    "deploy:staging": "ecs-deploy -c sd-staging-fargate -n staging-sd-cors-anywhere -i 986110171865.dkr.ecr.us-east-1.amazonaws.com/sd-cors-anywhere:$TRAVIS_BUILD_NUMBER-$(git log --format=%h -1) -r us-east-1 -t 180"
   },
   "engines": {
     "node": ">=0.10.0"

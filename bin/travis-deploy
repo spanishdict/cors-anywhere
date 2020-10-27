@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Required env vars:
+# - AWS_ACCESS_KEY_ID
+# - AWS_SECRET_ACCESS_KEY
+
+IMAGE_NAME=${PWD##*/}
+REMOTE_IMAGE_URL=986110171865.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME
+SHORT_COMMIT=$(git log --format=%h -1)
+VERSION=$TRAVIS_BUILD_NUMBER-$SHORT_COMMIT
+
+eval $(aws ecr get-login --no-include-email --region us-east-1)
+
+# docker build --cache-from requires Docker 1.13
+docker pull "$REMOTE_IMAGE_URL:latest"
+docker build --cache-from "$REMOTE_IMAGE_URL:latest" \
+  --tag "$REMOTE_IMAGE_URL:$VERSION" \
+  --tag "$REMOTE_IMAGE_URL:latest" .
+
+# Note, if the docker image built is the same as the previous image, then their
+# Image IDs should match. If they match, then we do not want to docker push or
+# deploy, as it is not necessary and applies multiple tags to one image. Our
+# deploy to prod process is dependent on an image only having one tag.
+#
+
+UNIQUE_IMAGE_IDS=$(docker images --filter "reference=$REMOTE_IMAGE_URL" --format "{{.ID}}" | sort | uniq | wc -l)
+
+if [ $UNIQUE_IMAGE_IDS -gt 1 ]; then
+  echo "Pushing $REMOTE_IMAGE_URL:$VERSION"
+  docker push "$REMOTE_IMAGE_URL:latest" && echo "Pushed $REMOTE_IMAGE_URL:latest" || echo "Failed to push"
+  docker push "$REMOTE_IMAGE_URL:$VERSION" && echo "Pushed $REMOTE_IMAGE_URL:$VERSION" || echo "Failed to push"
+
+  echo "Deploying staging"
+  npm run deploy:staging
+else
+  echo "Docker Image ID matches last value is the same, so no need to push or deploy."
+fi

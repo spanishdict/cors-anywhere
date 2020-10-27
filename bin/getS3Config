@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+require 'aws-sdk-s3'
+require 'aws-sdk-kms'
+
+s3key = ENV['SD_ENV_PATH'] || raise('no SD_ENV_PATH provided')
+
+region = 'us-east-1'
+s3bucket = 'sd-ecs'
+key_id = '02a37f34-a2e4-4046-bc4c-edd88afea10a' # 'alias/ecs'
+
+s3_client = Aws::S3::Client.new(region: region)
+kms_client = Aws::KMS::Client.new(region: region)
+
+s3_encryption_client = Aws::S3::EncryptionV2::Client.new(
+  client: s3_client,
+  kms_key_id: key_id,
+  kms_client: kms_client,
+  key_wrap_schema: :kms_context,
+  content_encryption_schema: :aes_gcm_no_padding,
+  security_profile: :v2_and_legacy # to allow reading/decrypting objects encrypted by the V1 encryption client
+)
+
+response = s3_encryption_client.get_object(bucket: s3bucket, key: s3key)
+
+exports = ""
+response.body.read.each_line { |line| exports << "export #{line.chomp};" }
+
+puts exports
