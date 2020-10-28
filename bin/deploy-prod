@@ -4,7 +4,7 @@ bin/get-ecs-last-image-version.sh | grep -E '^[0-9]{1,5}-[0-9a-fA-F]{7}' || { ec
 
 ECS_IMAGE_VERSION=$1
 
-ecs-deploy -c sd-production-fargate -n prod-sd-cors-anywhere -i 986110171865.dkr.ecr.us-east-1.amazonaws.com/sd-cors-anywhere:$ECS_IMAGE_VERSION -r us-east-1 -t 180
+ecs-deploy -c sd-production-fargate -n prod-sd-cors-anywhere-fargate -i 986110171865.dkr.ecr.us-east-1.amazonaws.com/sd-cors-anywhere:$ECS_IMAGE_VERSION -r us-east-1 -t 180
 
 # git tag release
 SHORT_COMMIT="$(cut -d'-' -f2 <<<"$ECS_IMAGE_VERSION")"
